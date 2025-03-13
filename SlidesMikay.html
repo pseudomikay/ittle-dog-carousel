@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background: linear-gradient(to right, #6a11cb, #2575fc); /* Purple gradient */
+  text-align: center;
+  color: #fff;
+}
+
+.navbar {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px 0;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar ul li {
+  margin: 0 20px;
+  position: relative;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 10px 15px;
+  transition: all 0.3s ease-in-out;
+  border-radius: 5px;
+}
+
+.navbar ul li a:hover {
+  background: #ffd700;
+  color: #1e3c72;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  top: 100%;
+  left: 0;
+  border-radius: 5px;
+  min-width: 150px;
+  text-align: left;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px;
+  color: white;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.dropdown-content a:hover {
+  background: #ffd700;
+  color: #1e3c72;
+}
+
+.navbar ul li:hover .dropdown-content {
+  display: block;
+}
+
+.slideshow-container {
+  max-width: 90%;
+  height: 600px;
+  position: relative;
+  margin: auto;
+  margin-top: 80px;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.mySlides {
+  width: 100%;
+  height: 600px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.mySlides img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+  transform: scale(1);
+  transition: transform 1s ease-in-out;
+}
+
+.activeSlide {
+  opacity: 1 !important;
+}
+
+.activeSlide img {
+  transform: scale(1.05);
+}
+
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%);
+  transition: 0.3s ease-in-out;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+.prev:hover, .next:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1e3c72;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.dot {
+  cursor: pointer;
+  height: 12px;
+  width: 12px;
+  margin: 6px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease, transform 0.3s ease-in-out;
+}
+
+.active, .dot:hover {
+  background-color: #ffd700;
+  transform: scale(1.2);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <ul>
+    <li><a href="#">TOURIST SPOTS IN CANADA</a></li>
+  </ul>
+</nav>
+
+<div class="slideshow-container" id="slideshow-container"></div>
+<br>
+<div style="text-align:center" id="dots-container"></div>
+<a class="prev" onclick="plusSlides(-1)">❮</a>
+<a class="next" onclick="plusSlides(1)">❯</a>
+
+<script>
+let slideIndex = 1;
+
+function showSlides(n) {
+  let slides = document.getElementsByClassName("mySlides");
+  let dots = document.getElementsByClassName("dot");
+
+  if (n > slides.length) slideIndex = 1;
+  if (n < 1) slideIndex = slides.length;
+
+  for (let slide of slides) slide.classList.remove("activeSlide");
+  for (let dot of dots) dot.classList.remove("active");
+
+  slides[slideIndex - 1].classList.add("activeSlide");
+  dots[slideIndex - 1].classList.add("active");
+}
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function autoSlides() {
+  plusSlides(1);
+  setTimeout(autoSlides, 5000);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("SlidesMikay.xml")
+        .then(response => response.text())
+        .then(data => {
+            let parser = new DOMParser();
+            let xml = parser.parseFromString(data, "text/xml");
+            let images = xml.getElementsByTagName("image");
+            
+            let slideshowContainer = document.getElementById("slideshow-container");
+            let dotsContainer = document.getElementById("dots-container");
+
+            for (let i = 0; i < images.length; i++) {
+                let url = images[i].getElementsByTagName("url")[0].textContent;
+                let caption = images[i].getElementsByTagName("caption")[0].textContent;
+
+                let slideDiv = document.createElement("div");
+                slideDiv.classList.add("mySlides");
+
+                let img = document.createElement("img");
+                img.src = url;
+
+                let captionText = document.createElement("div");
+                captionText.classList.add("text");
+                captionText.innerText = caption;
+
+                slideDiv.appendChild(img);
+                slideDiv.appendChild(captionText);
+                slideshowContainer.appendChild(slideDiv);
+
+                let dot = document.createElement("span");
+                dot.classList.add("dot");
+                dot.setAttribute("onclick", `currentSlide(${i + 1})`);
+                dotsContainer.appendChild(dot);
+            }
+            showSlides(slideIndex);
+            setTimeout(autoSlides, 5000);
+        })
+        .catch(error => console.error("Error loading XML:", error));
+});
+</script>
+
+</body>
+</html>
